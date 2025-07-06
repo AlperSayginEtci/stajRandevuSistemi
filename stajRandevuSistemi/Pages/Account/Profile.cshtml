@@ -1,0 +1,51 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Account.ProfileModel
+@{
+    ViewData["Title"] = "Hesabım";
+}
+
+<h2>👤 Hesap Bilgileri</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Ad</th>
+        <td>@Model.Kullanici.Ad</td>
+    </tr>
+    <tr>
+        <th>Soyad</th>
+        <td>@Model.Kullanici.Soyad</td>
+    </tr>
+    <tr>
+        <th>E-posta</th>
+        <td>@Model.Kullanici.Eposta</td>
+    </tr>
+    <tr>
+        <th>Kayıt Tarihi</th>
+        <td>@Model.Kullanici.KayitTarihi.ToShortDateString()</td>
+    </tr>
+</table>
+
+<hr />
+
+<h3>🔐 Şifre Değiştir</h3>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+    <div class="alert alert-success">@Model.Message</div>
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label>Mevcut Şifre</label>
+        <input asp-for="Input.CurrentPassword" type="password" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Yeni Şifre</label>
+        <input asp-for="Input.NewPassword" type="password" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label>Yeni Şifre (Tekrar)</label>
+        <input asp-for="Input.ConfirmPassword" type="password" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Şifreyi Güncelle</button>
+</form>

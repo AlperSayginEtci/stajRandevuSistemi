@@ -1,0 +1,108 @@
+﻿@page
+@model stajRandevuSistemi.Pages.RandevuOda.AlModel
+@{
+    ViewData["Title"] = "Oda Randevusu";
+    var minTarih = DateTime.Now.Date.ToString("yyyy-MM-dd");
+
+   
+
+}
+
+
+<h2>📅 Randevu Al – @(Model.Oda?.OdaNo ?? "Bilinmeyen Oda")</h2>
+<p><strong>Kütüphane:</strong> @Model.KutuphaneAdi</p>
+
+<form method="post">
+    <input type="hidden" asp-for="OdaID" />
+    <input type="hidden" asp-for="KutuphaneID" />
+
+    <div class="mb-3">
+        <label asp-for="RandevuTarihi">Tarih</label>
+        <input asp-for="RandevuTarihi"
+               id="BaslangicSaati"
+               type="date"
+               class="form-control"
+               min="@minTarih"
+               value="@minTarih"
+               onkeydown="return false;" />
+    </div>
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="BaslangicSaati" class="form-label">Başlangıç Saati</label>
+            <input asp-for="BaslangicSaati"
+                   id="BaslangicSaati"
+                   type="time"
+                   class="form-control"
+                   min="09:00"
+                   max="19:00"
+                   step="1800"
+                   value="09:00"
+                   onkeydown="return false;" />
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <label asp-for="BitisSaati" class="form-label">Bitiş Saati</label>
+            <input asp-for="BitisSaati"
+                   id="BitisSaati"
+                   type="time"
+                   class="form-control"
+                   min="10:00"
+                   max="20:00"
+                   step="1800"
+                   value="10:00"
+                   onkeydown="return false;" />
+        </div>
+    </div>
+    <div class="form-check mb-3">
+        <input asp-for="Paylasimli" class="form-check-input" id="paylasimliCheck" />
+        <label asp-for="Paylasimli" class="form-check-label">Paylaşımlı Oda</label>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Doluluk">Kişi Sayısı</label>
+        <input asp-for="Doluluk"
+               type="number"
+               class="form-control"
+               id="dolulukInput"
+               min="1"
+               disabled />
+    </div>
+
+    <button type="submit" class="btn btn-success">Randevuyu Tamamla</button>
+</form>
+@section Scripts {
+    <script>
+        function validateTime(input, min, max) {
+            const value = input.value;
+            if (value < min || value > max) {
+                alert(`Saat ${min} ile ${max} arasında olmalı.`);
+                input.value = min;
+            }
+        }
+
+        const baslangicInput = document.getElementById("BaslangicSaati");
+        const bitisInput = document.getElementById("BitisSaati");
+
+        baslangicInput?.addEventListener("change", function () {
+            validateTime(this, "09:00", "19:00");
+        });
+
+        bitisInput?.addEventListener("change", function () {
+            validateTime(this, "10:00", "20:00");
+        });
+
+        // Paylaşımlı kontrolü 
+        const paylasimli = document.getElementById("paylasimliCheck");
+        const doluluk = document.getElementById("dolulukInput");
+
+        function toggleDoluluk() {
+            doluluk.disabled = !paylasimli.checked;
+            if (!paylasimli.checked) {
+                doluluk.value = "";
+            }
+        }
+
+        paylasimli?.addEventListener("change", toggleDoluluk);
+        window.addEventListener("DOMContentLoaded", toggleDoluluk);
+    </script>
+}

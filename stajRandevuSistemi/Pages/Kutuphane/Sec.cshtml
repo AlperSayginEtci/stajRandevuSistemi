@@ -1,0 +1,21 @@
+﻿@page
+@model KutuphaneSecModel
+@{
+    ViewData["Title"] = "Randevu Türü Seç";
+}
+
+<h2>@Model.KutuphaneAdi</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="KutuphaneID" />
+
+    <div class="mb-3">
+        <label for="RandevuTuru">Randevu Türü:</label>
+        <select asp-for="RandevuTuru" class="form-select">
+            <option value="kitap">📚 Kitap Randevusu</option>
+            <option value="oda">🏠 Oda Randevusu</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Devam Et</button>
+</form>

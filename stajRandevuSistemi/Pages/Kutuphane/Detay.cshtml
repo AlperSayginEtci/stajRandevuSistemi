@@ -1,0 +1,66 @@
+﻿@page "{id:int}"
+@model stajRandevuSistemi.Pages.Kutuphane.DetayModel
+@{
+    ViewData["Title"] = "Kütüphane Kitapları";
+}
+
+<h2>@Model.KutuphaneAdi - Kitaplar</h2>
+
+<form method="get" class="mb-4">
+    <input type="hidden" name="id" value="@RouteData.Values["id"]" />
+    <div class="input-group">
+        <input type="text" name="Arama" value="@Model.Arama" class="form-control" placeholder="Kitap adıyla ara..." />
+        <button type="submit" class="btn btn-outline-primary">Ara</button>
+    </div>
+</form>
+
+
+@if (Model.Kitaplar.Any())
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var kitap in Model.Kitaplar)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (!string.IsNullOrEmpty(kitap.KapakBase64))
+                    {
+                        <img src="@kitap.KapakBase64" class="card-img-top" alt="Kapak Foto" style="height: 250px; object-fit: contain; background-color: #f8f9fa;" />
+                    }
+                    else
+                    {
+                        <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 250px;">
+                            <span>Kapak Yok</span>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@kitap.KitapAdi</h5>
+                        <p class="card-text">
+                            <strong>Yazar:</strong> @kitap.Yazar<br />
+                            <strong>Tür:</strong> @kitap.Tur<br />
+                            <strong>Stok:</strong> @kitap.Stok
+                            @if (kitap.Stok > 0)
+                            {
+                                <a asp-page="/Randevu/RandevuKitap/Al"
+                                   asp-route-KitapID="@kitap.KitapID"
+                                   asp-route-KutuphaneID="@RouteData.Values["id"]"
+                                   class="btn btn-sm btn-outline-success mt-2">
+                                    📖 Randevu Al
+                                </a>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger mt-2">Stokta Yok</span>
+                            }
+                        </p>
+
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Bu kütüphanede henüz kitap bulunmamaktadır.</p>
+}

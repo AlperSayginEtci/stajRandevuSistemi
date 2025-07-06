@@ -1,0 +1,36 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Account.LoginModel
+@{
+	Layout = null; 
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Giriş</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+</head>
+<body class="d-flex justify-content-center align-items-center vh-100">
+    <div class="card p-4" style="width: 350px;">
+        <h3 class="text-center">Giriş Yap</h3>
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Input.Eposta" class="form-label"></label>
+                <input asp-for="Input.Eposta" class="form-control" />
+            </div>
+            <div class="mb-3">
+                <label asp-for="Input.Password" class="form-label"></label>
+                <input asp-for="Input.Password" type="password" class="form-control" />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Giriş</button>
+        </form>
+        <div class="text-center mt-2">
+            <a asp-page="./Register">Hesabın yok mu? Kayıt Ol</a>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

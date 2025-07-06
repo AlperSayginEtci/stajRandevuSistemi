@@ -1,0 +1,42 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Randevu.RandevularimOdaModel
+@{
+    ViewData["Title"] = "Oda Randevularım";
+}
+
+<h2>🏠 Oda Randevularım</h2>
+
+@if (Model.Randevular?.Any() == true)
+{
+    <table class="table table-bordered table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Oda</th>
+                <th>Kütüphane</th>
+                <th>Tarih</th>
+                <th>Başlangıç</th>
+                <th>Bitiş</th>
+                <th>Paylaşımlı mı?</th>
+                <th>Kişi Sayısı</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Randevular)
+            {
+                <tr>
+                    <td>@r.OdaNo</td>
+                    <td>@r.KutuphaneAdi</td>
+                    <td>@r.RandevuTarihi.ToString("yyyy-MM-dd")</td>
+                    <td>@r.BaslangicSaati.ToString(@"hh\:mm")</td>
+                    <td>@r.BitisSaati.ToString(@"hh\:mm")</td>
+                    <td>@(r.Paylasimli ? "Evet" : "Hayır")</td>
+                    <td>@r.Doluluk</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info mt-3">Henüz oda randevunuz bulunmamaktadır.</div>
+}

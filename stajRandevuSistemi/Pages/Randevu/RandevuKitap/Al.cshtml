@@ -1,0 +1,62 @@
+﻿@page
+@model stajRandevuSistemi.Pages.RandevuKitap.AlModel
+@{
+    ViewData["Title"] = "Kitap Randevusu";
+}
+@{
+    var minTarih = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+   
+
+}
+
+<h2>📖 Randevu Al – @(Model.Kitap?.KitapAdi ?? "Bilinmeyen Kitap")</h2>
+<p><strong>Kütüphane:</strong> @Model.KutuphaneAdi</p>
+
+<form method="post">
+    <input type="hidden" asp-for="KitapID" />
+    <input type="hidden" asp-for="KutuphaneID" />
+
+    <div class="mb-3">
+        <label>Bitiş Tarihi</label>
+
+        <input id="bitisTarihi"
+               name="BitisTarihi"
+               type="date"
+               class="form-control"
+               value="@minTarih"
+               min="@minTarih"
+               onkeydown="return false;" />
+
+        @section Scripts {
+            <script>
+                const input = document.getElementById("bitisTarihi");      
+                input.addEventListener("keydown", function (e) {
+                    e.preventDefault();
+                });
+
+                input.addEventListener("click", function () {
+                    if (this.showPicker) {
+                        this.showPicker(); 
+                    } else {
+                        this.readOnly = false;
+                        this.focus();
+                    }s
+                });
+            </script>
+        }
+
+
+    </div>
+
+    <button type="submit" class="btn btn-success">Randevuyu Tamamla</button>
+</form>
+
+@if (!ModelState.IsValid)
+{
+    <div class="alert alert-danger mt-3">
+        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+        {
+            <div>@error.ErrorMessage</div>
+        }
+    </div>
+}

@@ -1,0 +1,36 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Randevu.RandevularimKitapModel
+@{
+    ViewData["Title"] = "Kitap Randevularım";
+}
+
+<h2>📚 Kitap Randevularım</h2>
+
+@if (Model.Randevular?.Any() == true)
+{
+    <table class="table table-bordered table-striped mt-3">
+        <thead class="table-dark">
+            <tr>
+                <th>Kitap</th>
+                <th>Kütüphane</th>
+                <th>Randevu Tarihi</th>
+                <th>Bitiş Tarihi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var r in Model.Randevular)
+            {
+                <tr>
+                    <td>@r.KitapAdi</td>
+                    <td>@r.KutuphaneAdi</td>
+                    <td>@r.RandevuTarihi.ToString("yyyy-MM-dd")</td>
+                    <td>@(r.BitisTarihi?.ToString("yyyy-MM-dd") ?? "-")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info mt-3">Henüz kitap randevunuz bulunmamaktadır.</div>
+}

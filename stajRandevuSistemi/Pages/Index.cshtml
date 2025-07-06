@@ -1,0 +1,55 @@
+﻿@page
+@model stajRandevuSistemi.Pages.IndexModel
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<h2>Hoş geldiniz, @Model.KullaniciAdi 👋</h2>
+
+<hr />
+
+<h4>📚 Kütüphaneler</h4>
+
+@if (Model.Kutuphaneler.Any())
+{
+    <div class="list-group">
+        @foreach (var kutuphane in Model.Kutuphaneler)
+        {
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>@kutuphane.KutuphaneAdi</strong>
+                </div>
+                <a class="btn btn-sm btn-outline-primary"
+                   asp-page="/Kutuphane/Sec"
+                   asp-route-id="@kutuphane.KutuphaneID">
+                </a>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Henüz kayıtlı kütüphane bulunmamaktadır.</p>
+}
+
+<hr />
+
+<div class="mt-4">
+    <a class="btn btn-outline-secondary" asp-page="/Account/Profile">Hesabım</a>  
+</div>
+<form method="post" class="mt-4">
+    <div class="mb-3">
+        <label for="RandevuTuru" class="form-label">Randevu Türü:</label>
+        <select asp-for="RandevuTuru" class="form-select">
+            <option value="">-- Seçiniz --</option>
+            <option value="kitap">📚 Kitap Randevusu</option>
+            <option value="oda">🏠 Oda Randevusu</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">📋 Randevularımı Gör</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.HataMesaji))
+{
+    <div class="alert alert-danger mt-3">@Model.HataMesaji</div>
+}
