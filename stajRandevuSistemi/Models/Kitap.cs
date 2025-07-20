@@ -8,7 +8,7 @@
         public string? Tur { get; set; }
         public string? Yayinevi { get; set; }
         public string? Cevirmen { get; set; }
-        public byte[] KapakFoto { get; set; }
+        public byte[]? KapakFoto { get; set; }
 
         public ICollection<KutuphaneKitapStock> Kutuphaneler { get; set; }
         public ICollection<RandevuKitap> Randevular { get; set; }

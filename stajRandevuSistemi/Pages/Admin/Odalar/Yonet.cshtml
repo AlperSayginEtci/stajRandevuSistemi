@@ -1,0 +1,51 @@
+﻿@page "{kutuphaneId:int}"
+@model stajRandevuSistemi.Pages.Admin.Odalar.YonetModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Oda Yönetimi";
+}
+
+<h2>🏛️ @Model.KutuphaneAdi - Oda Yönetimi</h2>
+
+<form method="post" asp-page-handler="Ekle">
+    <input type="hidden" name="KutuphaneID" value="@Model.KutuphaneID" />
+    <div class="row mb-3">
+        <div class="col">
+            <input name="OdaNo" class="form-control" placeholder="Oda No" />
+        </div>
+        <div class="col">
+            <input name="Kapasite" type="number" class="form-control" placeholder="Kapasite" />
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-success">Ekle</button>
+        </div>
+    </div>
+</form>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Oda No</th>
+            <th>Kapasite</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var oda in Model.Odalar)
+        {
+            <tr>
+                <td>@oda.OdaID</td>
+                <td>@oda.OdaNo</td>
+                <td>@oda.Kapasite</td>
+                <td>
+                    <form method="post" asp-page-handler="Sil" class="d-inline">
+                        <input type="hidden" name="OdaID" value="@oda.OdaID" />
+                        <input type="hidden" name="KutuphaneID" value="@Model.KutuphaneID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

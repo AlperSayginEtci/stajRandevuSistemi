@@ -1,0 +1,97 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Admin.Kitaplar.HavuzModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kitap Havuzu";
+}
+
+<h2>📚 Kitap Havuzu</h2>
+
+<!-- Arama -->
+<form method="get" class="mb-3">
+    <input type="text" name="arama" value="@Model.Arama" class="form-control" placeholder="Kitap adı, yazar ara..." />
+</form>
+
+<!--Kitap Ekleme -->
+<div class="accordion mb-4" id="kitapEkleAccordion">
+    <div class="accordion-item">
+        <h2 class="accordion-header" id="headingEkle">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEkle" aria-expanded="false" aria-controls="collapseEkle">
+                ➕ Yeni Kitap Ekle
+            </button>
+        </h2>
+        <div id="collapseEkle" class="accordion-collapse collapse" aria-labelledby="headingEkle" data-bs-parent="#kitapEkleAccordion">
+            <div class="accordion-body">
+                <form method="post" asp-page-handler="Ekle" enctype="multipart/form-data">
+                    <div class="mb-2">
+                        <label>Kitap Adı</label>
+                        <input name="KitapAdi" class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Yazar</label>
+                        <input name="Yazar" class="form-control" />
+                    </div>
+                    <div class="mb-2">
+                        <label>Kapak Fotoğrafı</label>
+                        <input type="file" name="KapakFoto" class="form-control" accept=".png,.jpg,.jpeg" onchange="previewImage(event)" />
+                        <img id="preview" src="#" style="display:none;" width="100" class="mt-2 border rounded" />
+                    </div>
+                    <button type="submit" class="btn btn-success">Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Kitap Listesi -->
+<table class="table table-bordered align-middle">
+    <thead class="table-light">
+        <tr>
+            <th style="width: 80px;">Kapak</th>
+            <th>Adı</th>
+            <th>Yazar</th>
+            <th style="width: 100px;">İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kitap in Model.Kitaplar)
+        {
+            <tr>
+                <td>
+                    @if (kitap.KapakFoto != null)
+                    {
+                        var base64 = Convert.ToBase64String(kitap.KapakFoto);
+                        <img src="data:image/png;base64,@base64" width="60" height="80" style="object-fit: cover;" class="rounded shadow-sm" />
+                    }
+                    else
+                    {
+                        <span class="text-muted">Yok</span>
+                    }
+                </td>
+                <td>@kitap.KitapAdi</td>
+                <td>@kitap.Yazar</td>
+                <td>
+                    <form method="post" asp-page-handler="Sil" class="d-inline">
+                        <input type="hidden" name="KitapID" value="@kitap.KitapID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts{
+    <script>
+        function previewImage(event) {
+            const reader = new FileReader();
+            reader.onload = function () {
+                const img = document.getElementById('preview');
+                img.src = reader.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+
+
+}

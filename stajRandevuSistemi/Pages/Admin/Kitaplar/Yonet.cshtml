@@ -1,0 +1,87 @@
+﻿@page "{kutuphaneId:int}"
+@model stajRandevuSistemi.Pages.Admin.Kitaplar.YonetModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kitap Yönetimi";
+}
+
+<h2>📚 @Model.KutuphaneAdi - Kitap Yönetimi</h2>
+
+
+<form method="get" class="mb-3">
+    <input type="hidden" name="kutuphaneId" value="@Model.KutuphaneID" />
+    <input type="text" name="arama" value="@Model.Arama" class="form-control" placeholder="Kitap adı, yazar veya tür ara..." />
+</form>
+
+
+<form method="post" asp-page-handler="Ekle" class="mb-4">
+    <input type="hidden" name="KutuphaneID" value="@Model.KutuphaneID" />
+    <div class="row">
+        <div class="col">
+            <select name="KitapID" class="form-select">
+                <option value="">-- Kitap Seç --</option>
+                @foreach (var kitap in Model.TumKitaplar)
+                {
+                    <option value="@kitap.KitapID">@kitap.KitapAdi - @kitap.Yazar</option>
+                }
+            </select>
+        </div>
+        <div class="col">
+            <input name="Stock" type="number" class="form-control" placeholder="Stok" />
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-success">Ekle</button>
+        </div>
+    </div>
+</form>
+
+
+<table class="table table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th style="width:100px;">Kapak</th>
+            <th>Kitap</th>
+            <th>Yazar</th>
+            <th>Tür</th>
+            <th style="width:180px;">Stok İşlemi</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kitap in Model.KutuphaneKitaplari)
+        {
+            <tr>
+                <td>
+                    @if (kitap.KapakFoto != null)
+                    {
+                        var base64 = Convert.ToBase64String(kitap.KapakFoto);
+                        <img src="data:image/png;base64,@base64" width="60" height="85" class="rounded shadow-sm" style="object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="text-muted text-center">Yok</div>
+                    }
+                </td>
+                <td>
+                    <strong>@kitap.KitapAdi</strong>
+                </td>
+                <td>@kitap.Yazar</td>
+                <td>@kitap.Tur</td>
+                <td>
+                    <form method="post" asp-page-handler="GuncelleStok" class="d-inline-flex align-items-start gap-2">
+                        <input type="hidden" name="KitapID" value="@kitap.KitapID" />
+                        <input type="hidden" name="KutuphaneID" value="@Model.KutuphaneID" />
+                        <input type="number" name="YeniStok" value="@kitap.Stock" class="form-control form-control-sm" style="width:70px;" />
+                        <button type="submit" class="btn btn-sm btn-primary">Güncelle</button>
+
+                   
+                        <form method="post" asp-page-handler="Sil">
+                            <input type="hidden" name="KitapID" value="@kitap.KitapID" />
+                            <input type="hidden" name="KutuphaneID" value="@Model.KutuphaneID" />
+                            <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                        </form>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

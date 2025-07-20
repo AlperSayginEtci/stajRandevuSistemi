@@ -7,6 +7,6 @@
 
         public int KutuphaneID { get; set; }
         public Kutuphane Kutuphane { get; set; }
-        public string KutuphaneAdi { get; set; }
+
     }
 }

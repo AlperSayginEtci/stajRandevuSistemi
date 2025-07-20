@@ -1,0 +1,34 @@
+﻿
+/* Dropdown menü arka plan ve metin */
+.dropdown-menu {
+    background-color: var(--card) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+/* Dropdown öğeleri */
+.dropdown-item {
+    color: var(--text) !important;
+}
+
+    .dropdown-item:hover,
+    .dropdown-item:focus {
+        background-color: var(--border) !important;
+        color: var(--text) !important;
+    }
+
+/* Form-select için override (Bootstrap default’i temizle) */
+.form-select {
+    background-color: var(--card) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}
+
+/* Açılır-kapanır inputlar (input[type="date"], input[type="time"] vs.) */
+input,
+button,
+select {
+    background-color: var(--card) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+}

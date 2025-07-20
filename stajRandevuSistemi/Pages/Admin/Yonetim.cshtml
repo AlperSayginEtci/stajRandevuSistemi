@@ -1,0 +1,15 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Admin.YonetimModel
+@{
+    Layout = "_AdminLayout";
+}
+<h2>🔒 Yönetim Paneli</h2>
+<div class="row">
+    <div class="col-md-4">
+        <a asp-page="/Admin/Kutuphaneler" class="btn btn-outline-primary w-100 mb-2">Kütüphaneleri Yönet</a>
+        <a asp-page="/Admin/Odalar/Sec" class="btn btn-outline-secondary w-100 mb-2">Odaları Yönet</a>
+        <a asp-page="/Admin/Kitaplar/Sec" class="btn btn-outline-success w-100 mb-2">KÜtüphane Stok Yönet</a>
+        <a asp-page="/Admin/Kitaplar/Havuz" class="btn btn-outline-info w-100 mb-2">Kitap Havuzu</a>
+        <a asp-page="/Admin/Kullanicilar/Kullanicilar" class="btn btn-outline-dark w-100 mb-2">Kullanıcılar</a>
+    </div>
+</div>

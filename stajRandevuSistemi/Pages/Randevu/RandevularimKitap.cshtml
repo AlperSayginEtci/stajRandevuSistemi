@@ -1,6 +1,7 @@
 ﻿@page
 @model stajRandevuSistemi.Pages.Randevu.RandevularimKitapModel
 @{
+    Layout = "_UserLayout";
     ViewData["Title"] = "Kitap Randevularım";
 }
 
@@ -15,6 +16,8 @@
                 <th>Kütüphane</th>
                 <th>Randevu Tarihi</th>
                 <th>Bitiş Tarihi</th>
+                <th></th>
+
             </tr>
         </thead>
         <tbody>
@@ -25,6 +28,12 @@
                     <td>@r.KutuphaneAdi</td>
                     <td>@r.RandevuTarihi.ToString("yyyy-MM-dd")</td>
                     <td>@(r.BitisTarihi?.ToString("yyyy-MM-dd") ?? "-")</td>
+                    <td>
+                        <form method="post" asp-page-handler="TeslimEt">
+                            <input type="hidden" name="RandevuID" value="@r.RandevuID" />
+                            <button type="submit" class="btn btn-sm btn-success">Teslim Et</button>
+                        </form>
+                    </td>
                 </tr>
             }
         </tbody>

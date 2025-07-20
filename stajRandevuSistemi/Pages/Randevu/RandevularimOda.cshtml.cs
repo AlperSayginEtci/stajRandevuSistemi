@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using stajRandevuSistemi.Data;
@@ -31,6 +32,7 @@ namespace stajRandevuSistemi.Pages.Randevu
                           orderby r.RandevuTarihi descending, r.BaslangicSaati
                           select new RandevuOdaViewModel
                           {
+                              OdaRandevuID = r.OdaRandevuID,
                               OdaNo = o.OdaNo,
                               KutuphaneAdi = k.KutuphaneAdi,
                               RandevuTarihi = r.RandevuTarihi,
@@ -40,9 +42,21 @@ namespace stajRandevuSistemi.Pages.Randevu
                               Doluluk = r.Doluluk
                           }).ToList();
         }
+        public IActionResult OnPostIptalEt(int OdaRandevuID)
+        {
+            var randevu = _db.Randevular_Oda.FirstOrDefault(r => r.OdaRandevuID == OdaRandevuID);
+            if (randevu == null)
+                return NotFound();
+
+            _db.Randevular_Oda.Remove(randevu);
+            _db.SaveChanges();
+
+            return RedirectToPage();
+        }
 
         public class RandevuOdaViewModel
         {
+            public int OdaRandevuID { get; set; }
             public string OdaNo { get; set; }
             public string KutuphaneAdi { get; set; }
             public DateTime RandevuTarihi { get; set; }

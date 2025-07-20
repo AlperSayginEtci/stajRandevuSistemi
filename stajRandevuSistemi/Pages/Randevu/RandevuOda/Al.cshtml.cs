@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using stajRandevuSistemi.Data;
 using stajRandevuSistemi.Models;
@@ -20,7 +20,7 @@ namespace stajRandevuSistemi.Pages.RandevuOda
         [BindProperty(SupportsGet = true)]
         public int KutuphaneID { get; set; }
 
-        [BindProperty]
+        [BindProperty(SupportsGet = true)]
         public DateTime RandevuTarihi { get; set; }
 
         [BindProperty]
@@ -37,37 +37,107 @@ namespace stajRandevuSistemi.Pages.RandevuOda
 
         public Oda Oda { get; set; }
         public string KutuphaneAdi { get; set; }
+        public List<(TimeSpan Baslangic, TimeSpan Bitis, bool Paylasimli, int ToplamDoluluk)> DoluSaatler { get; set; } = new();
+
 
         public void OnGet()
         {
             Oda = _db.Odalar.FirstOrDefault(o => o.OdaID == OdaID);
             var kutuphane = _db.Kutuphaneler.FirstOrDefault(k => k.KutuphaneID == KutuphaneID);
             KutuphaneAdi = kutuphane?.KutuphaneAdi ?? "Bilinmeyen";
+
+            if (RandevuTarihi == default)
+                RandevuTarihi = DateTime.Today;
+
+            DoluSaatler = _db.Randevular_Oda
+                              .Where(r => r.OdaID == OdaID && r.RandevuTarihi == RandevuTarihi)
+                              .ToList()
+                              .GroupBy(r => new { r.BaslangicSaati, r.BitisSaati, r.Paylasimli })
+                              .Select(g => (
+                              Baslangic: g.Key.BaslangicSaati,
+                              Bitis: g.Key.BitisSaati,
+                              Paylasimli: g.Key.Paylasimli,
+                              oplamDoluluk: g.Sum(x => x.Doluluk))).OrderBy(s => s.Baslangic).ToList();
         }
 
         public IActionResult OnPost()
-        {       
+        {
             if (!ModelState.IsValid)
                 return Page();
-                if (BaslangicSaati < new TimeSpan(9, 0, 0) || BaslangicSaati > new TimeSpan(19, 0, 0))
-    {
-        ModelState.AddModelError("BaslangicSaati", "Ba�lang�� saati 09:00 - 19:00 aras�nda olmal�d�r.");
-    }
 
-    if (BitisSaati < new TimeSpan(10, 0, 0) || BitisSaati > new TimeSpan(20, 0, 0))
-    {
-        ModelState.AddModelError("BitisSaati", "Biti� saati 10:00 - 20:00 aras�nda olmal�d�r.");
-    }
+            Oda = _db.Odalar.FirstOrDefault(o => o.OdaID == OdaID);
+            var kutuphane = _db.Kutuphaneler.FirstOrDefault(k => k.KutuphaneID == KutuphaneID);
+            KutuphaneAdi = kutuphane?.KutuphaneAdi ?? "Bilinmeyen";
 
-    if (!ModelState.IsValid)
-        return Page();
+            DoluSaatler = _db.Randevular_Oda
+                              .Where(r => r.OdaID == OdaID && r.RandevuTarihi == RandevuTarihi)
+                              .ToList()
+                              .GroupBy(r => new { r.BaslangicSaati, r.BitisSaati, r.Paylasimli })
+                              .Select(g => (
+                              Baslangic: g.Key.BaslangicSaati,
+                              Bitis: g.Key.BitisSaati,
+                              Paylasimli: g.Key.Paylasimli,
+                              oplamDoluluk: g.Sum(x => x.Doluluk))).OrderBy(s => s.Baslangic).ToList();
 
+            if (BaslangicSaati < new TimeSpan(9, 0, 0) || BaslangicSaati > new TimeSpan(19, 0, 0))
+                ModelState.AddModelError("BaslangicSaati", "Başlangıç saati 09:00 - 19:00 arasında olmalıdır.");
+
+            if (BitisSaati < new TimeSpan(10, 0, 0) || BitisSaati > new TimeSpan(20, 0, 0))
+                ModelState.AddModelError("BitisSaati", "Bitiş saati 10:00 - 20:00 arasında olmalıdır.");
+
+            if (!ModelState.IsValid)
+                return Page();
 
             var oda = _db.Odalar.FirstOrDefault(o => o.OdaID == OdaID);
             if (oda == null)
             {
-                ModelState.AddModelError("", "Oda bulunamad�.");
+                ModelState.AddModelError("", "Oda bulunamadı.");
                 return Page();
+            }
+
+            //Paylaşımsız çakışma kontrolü
+            bool cakisanPaylasimsizVar = _db.Randevular_Oda.Any(r =>
+                r.OdaID == OdaID &&
+                r.RandevuTarihi == RandevuTarihi &&
+                r.Paylasimli == false &&
+                (
+                    BaslangicSaati < r.BitisSaati && BitisSaati > r.BaslangicSaati
+                )
+            );
+            bool cakisanPaylasimliVar = _db.Randevular_Oda.Any(r =>
+                                              r.OdaID == OdaID &&
+                                              r.RandevuTarihi == RandevuTarihi &&
+                                              r.Paylasimli == true &&(BaslangicSaati < r.BitisSaati && BitisSaati > r.BaslangicSaati ));
+
+            if (!Paylasimli && cakisanPaylasimliVar)
+            {
+                ModelState.AddModelError("", "Bu saat aralığında oda zaten paylaşımlı olarak rezerve edilmiştir. Paylaşımsız randevu alınamaz.");
+                return Page();
+            }
+
+            if (cakisanPaylasimsizVar)
+            {
+                ModelState.AddModelError("", "Bu saat aralığında oda paylaşımsız olarak rezerve edilmiştir.");
+                return Page();
+            }
+
+            //Paylaşımlı kapasite kontrolü
+            if (Paylasimli)
+            {
+                int mevcutDoluluk = _db.Randevular_Oda
+                    .Where(r => r.OdaID == OdaID &&
+                                r.RandevuTarihi == RandevuTarihi &&
+                                r.Paylasimli == true &&
+                                (
+                                    BaslangicSaati < r.BitisSaati && BitisSaati > r.BaslangicSaati
+                                ))
+                    .Sum(r => r.Doluluk);
+
+                if (mevcutDoluluk + Doluluk > oda.Kapasite)
+                {
+                    ModelState.AddModelError("", "Bu saat aralığında oda kapasitesi dolmuştur.");
+                    return Page();
+                }
             }
 
             int kullaniciID = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);

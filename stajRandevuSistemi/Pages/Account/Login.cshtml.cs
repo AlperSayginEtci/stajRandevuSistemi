@@ -32,11 +32,15 @@ namespace stajRandevuSistemi.Pages.Account
             // 1) Kullanýcýyý bul
             var user = _db.Kullanicilar
                           .FirstOrDefault(u => u.Eposta == Input.Eposta);
+            bool isAdmin = user.Eposta.ToLower() == "admin@hotmail.com";
+            new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "Kullanici");
+
             if (user == null)
             {
                 ModelState.AddModelError("", "E-posta veya þifre yanlýþ.");
                 return Page();
-            }
+            }              
+
 
             // 2) Þifreyi doðrula
             var hasher = new PasswordHasher<Kullanici>();
@@ -50,8 +54,13 @@ namespace stajRandevuSistemi.Pages.Account
             // 3) Cookie oluþtur ve giriþ yaptýr
             var claims = new List<Claim>
       {
-        new Claim(ClaimTypes.NameIdentifier, user.KullaniciID.ToString()),
-        new Claim(ClaimTypes.Name, user.Eposta)
+         new Claim(ClaimTypes.NameIdentifier, user.KullaniciID.ToString()),
+         new Claim(ClaimTypes.Name, user.Eposta),
+         new Claim(ClaimTypes.GivenName, user.Ad),         
+         new Claim(ClaimTypes.Surname, user.Soyad),
+
+        new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "Kullanici")
+
       };
             var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(
@@ -59,7 +68,10 @@ namespace stajRandevuSistemi.Pages.Account
               new ClaimsPrincipal(identity)
             );
 
-            return RedirectToPage("/Index"); // Giriþten sonra gideceðiniz sayfa
+            if (isAdmin)
+                return RedirectToPage("/Admin/Yonetim"); // admin sayfasý
+            else
+                return RedirectToPage("/Index"); // normal kullanýcý sayfasý
         }
     }
 }

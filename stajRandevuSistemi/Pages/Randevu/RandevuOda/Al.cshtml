@@ -1,6 +1,7 @@
 ﻿@page
 @model stajRandevuSistemi.Pages.RandevuOda.AlModel
 @{
+    Layout = "_UserLayout";
     ViewData["Title"] = "Oda Randevusu";
     var minTarih = DateTime.Now.Date.ToString("yyyy-MM-dd");
 
@@ -11,21 +12,39 @@
 
 <h2>📅 Randevu Al – @(Model.Oda?.OdaNo ?? "Bilinmeyen Oda")</h2>
 <p><strong>Kütüphane:</strong> @Model.KutuphaneAdi</p>
-
-<form method="post">
-    <input type="hidden" asp-for="OdaID" />
-    <input type="hidden" asp-for="KutuphaneID" />
-
+@if (Model.DoluSaatler?.Any() == true)
+{
+    <div class="alert alert-warning">
+        <strong>⚠️ Bu odada @Model.RandevuTarihi.ToString("yyyy-MM-dd") tarihinde dolu olan saat aralıkları:</strong>
+        <ul class="mb-0">
+            @foreach (var saat in Model.DoluSaatler)
+            {
+                <li>
+                    @saat.Baslangic.ToString(@"hh\:mm") – @saat.Bitis.ToString(@"hh\:mm")
+                    (@(saat.Paylasimli ? $"Paylaşımlı – {saat.ToplamDoluluk}/{Model.Oda?.Kapasite}" : "Paylaşımsız"))
+                </li>
+            }
+        </ul>
+    </div>
+}
+<form method="get" asp-page="/RandevuOda/Al">
+    <input type="hidden" name="OdaID" value="@Model.OdaID" />
+    <input type="hidden" name="KutuphaneID" value="@Model.KutuphaneID" />
     <div class="mb-3">
         <label asp-for="RandevuTarihi">Tarih</label>
         <input asp-for="RandevuTarihi"
-               id="BaslangicSaati"
                type="date"
                class="form-control"
                min="@minTarih"
-               value="@minTarih"
-               onkeydown="return false;" />
+               value="@Model.RandevuTarihi.ToString("yyyy-MM-dd")"
+               onchange="this.form.submit();" />
     </div>
+</form>
+<form method="post">
+    <input type="hidden" asp-for="RandevuTarihi" />
+    <input type="hidden" asp-for="OdaID" />
+    <input type="hidden" asp-for="KutuphaneID" />
+
     <div class="row">
         <div class="col-md-6 mb-3">
             <label asp-for="BaslangicSaati" class="form-label">Başlangıç Saati</label>
@@ -56,6 +75,7 @@
     <div class="form-check mb-3">
         <input asp-for="Paylasimli" class="form-check-input" id="paylasimliCheck" />
         <label asp-for="Paylasimli" class="form-check-label">Paylaşımlı Oda</label>
+
     </div>
 
     <div class="mb-3">

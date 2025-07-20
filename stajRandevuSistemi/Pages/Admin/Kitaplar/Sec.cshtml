@@ -1,0 +1,30 @@
+﻿@page
+@model stajRandevuSistemi.Pages.Admin.Kitaplar.SecModel
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Kütüphane Seç";
+}
+
+<h2>🏛️ Kütüphane Seç</h2>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Kütüphane Adı</th>
+            <th>İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var k in Model.Kutuphaneler)
+        {
+            <tr>
+                <td>@k.KutuphaneID</td>
+                <td>@k.KutuphaneAdi</td>
+                <td>
+                    <a class="btn btn-sm btn-primary" href="/Admin/Kitaplar/Yonet/@k.KutuphaneID">Kitapları Yönet</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

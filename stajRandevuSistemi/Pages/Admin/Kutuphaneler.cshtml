@@ -1,0 +1,44 @@
+﻿@page
+@model KutuphanelerModel
+@{
+    Layout = "_AdminLayout";
+}
+<h2>📚 Kütüphane Yönetimi</h2>
+
+<form method="post">
+    <input type="text" asp-for="YeniKutuphaneAdi" placeholder="Yeni kütüphane adı" class="form-control mb-2" />
+    <button type="submit" class="btn btn-primary">Ekle</button>
+</form>
+
+<hr />
+
+<table class="table table-bordered mt-3">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Adı</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var k in Model.KutuphaneList)
+        {
+            <tr>
+                <td>@k.KutuphaneID</td>
+                <td>
+                    <form method="post" asp-page-handler="Edit">
+                        <input type="hidden" name="EditID" value="@k.KutuphaneID" />
+                        <input type="text" name="EditAd" value="@k.KutuphaneAdi" class="form-control" />
+                        <button type="submit" class="btn btn-sm btn-warning mt-1">Güncelle</button>
+                    </form>
+                </td>
+                <td>
+                    <form method="post" asp-page-handler="Delete">
+                        <input type="hidden" name="SilID" value="@k.KutuphaneID" />
+                        <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

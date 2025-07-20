@@ -1,10 +1,13 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using stajRandevuSistemi.Data;
 using stajRandevuSistemi.Models;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.IO;
 
 namespace stajRandevuSistemi.Pages.Account
 {
@@ -23,6 +26,9 @@ namespace stajRandevuSistemi.Pages.Account
         [BindProperty]
         public ChangePasswordModel Input { get; set; }
 
+        [BindProperty]
+        public IFormFile YeniFoto { get; set; }
+
         public string Message { get; set; }
 
         public class ChangePasswordModel
@@ -36,34 +42,54 @@ namespace stajRandevuSistemi.Pages.Account
         {
             var id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             Kullanici = _db.Kullanicilar.FirstOrDefault(k => k.KullaniciID == id);
+
+            if (Kullanici == null)
+                return NotFound();
+
             return Page();
         }
 
-        public IActionResult OnPost()
+        public async Task<IActionResult> OnPostAsync()
         {
             var id = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             Kullanici = _db.Kullanicilar.FirstOrDefault(k => k.KullaniciID == id);
+            if (Kullanici == null)
+                return NotFound();
 
-            if (Input.NewPassword != Input.ConfirmPassword)
+            // Þifre alanlarý doluysa kontrol et
+            if (!string.IsNullOrWhiteSpace(Input?.CurrentPassword))
             {
-                ModelState.AddModelError("", "Yeni þifreler uyuþmuyor.");
-                return Page();
+                if (Input.NewPassword != Input.ConfirmPassword)
+                {
+                    ModelState.AddModelError("", "Yeni þifreler uyuþmuyor.");
+                    return Page();
+                }
+
+                var hasher = new PasswordHasher<Kullanici>();
+                var result = hasher.VerifyHashedPassword(Kullanici, Kullanici.SifreHash, Input.CurrentPassword);
+
+                if (result != PasswordVerificationResult.Success)
+                {
+                    ModelState.AddModelError("", "Mevcut þifre yanlýþ.");
+                    return Page();
+                }
+
+                Kullanici.SifreHash = hasher.HashPassword(Kullanici, Input.NewPassword);
+                Message = "Þifreniz baþarýyla güncellendi.";
             }
 
-            var hasher = new PasswordHasher<Kullanici>();
-            var result = hasher.VerifyHashedPassword(Kullanici, Kullanici.SifreHash, Input.CurrentPassword);
-
-            if (result != PasswordVerificationResult.Success)
+            // Resim yükleme
+            if (YeniFoto != null && YeniFoto.Length > 0)
             {
-                ModelState.AddModelError("", "Mevcut þifre yanlýþ.");
-                return Page();
+                using var ms = new MemoryStream();
+                await YeniFoto.CopyToAsync(ms);
+                Kullanici.ProfilFoto = ms.ToArray();
             }
 
-            Kullanici.SifreHash = hasher.HashPassword(Kullanici, Input.NewPassword);
-            _db.SaveChanges();
-
-            Message = "Þifreniz baþarýyla güncellendi.";
+            await _db.SaveChangesAsync();
             return Page();
         }
+
+
     }
 }

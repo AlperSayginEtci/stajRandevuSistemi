@@ -28,14 +28,24 @@ namespace stajRandevuSistemi.Pages
         public string? HataMesaji { get; set; }
 
 
-        public void OnGet()
+        public IActionResult OnGet()
         {
+            // 1) Admin kontrolu
+            if (User.IsInRole("Admin"))
+            {
+                return RedirectToPage("/Admin/Yonetim");
+            }
+
+            // 2) Normal kullanýcý sayfasý
             var kullaniciId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var kullanici = _db.Kullanicilar.FirstOrDefault(k => k.KullaniciID == kullaniciId);
             KullaniciAdi = kullanici?.Ad ?? "Kullanýcý";
-
             Kutuphaneler = _db.Kutuphaneler.ToList();
+
+            
+            return Page();
         }
+    
 
         public IActionResult OnPost()
         {

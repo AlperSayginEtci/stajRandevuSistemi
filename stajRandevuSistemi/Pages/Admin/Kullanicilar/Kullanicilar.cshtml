@@ -1,0 +1,36 @@
+﻿@page
+@model KullanicilarModel
+@{
+    ViewData["Title"] = "Kullanıcı Listesi";
+    Layout = "_AdminLayout";
+}
+
+<h2>👥 Tüm Kullanıcılar</h2>
+
+<form method="get" class="mb-3">
+    <input type="text" name="arama" value="@Model.Arama" class="form-control" placeholder="Ad, Soyad veya Eposta ara..." />
+</form>
+
+<table class="table table-hover align-middle">
+    <thead class="table-light">
+        <tr>
+            <th>Ad Soyad</th>
+            <th>Eposta</th>
+            <th>Kayıt Tarihi</th>
+            <th style="width:100px;">İşlem</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var kullanici in Model.Kullanicilar)
+        {
+            <tr>
+                <td>@kullanici.Ad @kullanici.Soyad</td>
+                <td>@kullanici.Eposta</td>
+                <td>@kullanici.KayitTarihi.ToShortDateString()</td>
+                <td>
+                    <a asp-page="Detay" asp-route-id="@kullanici.KullaniciID" class="btn btn-sm btn-primary">Detay</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

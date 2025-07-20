@@ -1,10 +1,32 @@
 ﻿@page
 @model stajRandevuSistemi.Pages.Account.ProfileModel
 @{
+    Layout = "_UserLayout";
     ViewData["Title"] = "Hesabım";
 }
 
 <h2>👤 Hesap Bilgileri</h2>
+
+@{
+    string imgSrc = Url.Content("~/images/default-profile.jpg");
+    if (Model.Kullanici?.ProfilFoto?.Length > 0)
+    {
+        var base64 = Convert.ToBase64String(Model.Kullanici.ProfilFoto);
+        imgSrc = $"data:image/png;base64,{base64}";
+    }
+}
+<div class="d-flex align-items-center mb-4 gap-4">
+    <img src="@imgSrc" class="rounded-circle border"
+         style="width:120px;height:120px;object-fit:cover;" />
+
+    <form method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="Kullanici.KullaniciID" />
+        <div class="mb-2">
+            <input asp-for="YeniFoto" type="file" class="form-control" />
+        </div>
+        <button type="submit" name="handler" value="Foto">Yükle</button>
+    </form>
+</div>
 
 <table class="table table-bordered">
     <tr>
@@ -25,6 +47,10 @@
     </tr>
 </table>
 
+<form method="get" asp-page="/Account/OkunanKitaplar">
+    <button type="submit" class="btn btn-outline-primary">📚 Okuduğum Kitaplar</button>
+</form>
+
 <hr />
 
 <h3>🔐 Şifre Değiştir</h3>
@@ -35,6 +61,7 @@
 }
 
 <form method="post">
+    <input type="hidden" name="handler" value="Sifre" />
     <div class="mb-3">
         <label>Mevcut Şifre</label>
         <input asp-for="Input.CurrentPassword" type="password" class="form-control" />

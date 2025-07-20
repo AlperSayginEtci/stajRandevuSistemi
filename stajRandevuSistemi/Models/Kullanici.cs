@@ -7,6 +7,9 @@
         public string Soyad { get; set; }
         public string Eposta { get; set; }
         public string SifreHash { get; set; }
+        public byte[]? ProfilFoto { get; set; }
+
+
         public DateTime KayitTarihi { get; set; } = DateTime.Now;
     }
 

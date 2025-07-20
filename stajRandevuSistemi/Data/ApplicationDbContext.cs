@@ -17,7 +17,7 @@ namespace stajRandevuSistemi.Data
         public DbSet<KutuphaneOda> KutuphaneOdalar { get; set; }
         public DbSet<RandevuKitap> Randevular_Kitap { get; set; }
         public DbSet<RandevuOda> Randevular_Oda { get; set; }
-
+        public DbSet<OkunanKitap> OkunanKitaplar { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {   
             modelBuilder.Entity<RandevuKitap>()
