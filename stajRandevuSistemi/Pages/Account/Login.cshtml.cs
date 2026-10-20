@@ -32,14 +32,13 @@ namespace stajRandevuSistemi.Pages.Account
             // 1) Kullanýcýyý bul
             var user = _db.Kullanicilar
                           .FirstOrDefault(u => u.Eposta == Input.Eposta);
-            bool isAdmin = user.Eposta.ToLower() == "admin@hotmail.com";
-            new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "Kullanici");
 
             if (user == null)
             {
                 ModelState.AddModelError("", "E-posta veya þifre yanlýþ.");
                 return Page();
             }              
+            bool isAdmin = user.Eposta.ToLower() == "admin@hotmail.com";
 
 
             // 2) Þifreyi doðrula

@@ -23,7 +23,7 @@ namespace stajRandevuSistemi.Pages.Account
             int kullaniciId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var kitaplar = _db.OkunanKitaplar
-              .Where(o => o.KullaniciID == 3)
+              .Where(o => o.KullaniciID == kullaniciId)
                  .Include(o => o.Kitap)
                  .ToList() // 🔑 burada sorgu veritabanından çekilir
 
